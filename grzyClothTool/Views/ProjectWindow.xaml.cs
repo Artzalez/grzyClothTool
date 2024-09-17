@@ -22,6 +22,7 @@ using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using System.Windows.Input;
 using grzyClothTool.Models.Drawable;
 using grzyClothTool.Models.Texture;
+using System.Threading.Tasks;
 
 namespace grzyClothTool.Views
 {
@@ -209,7 +210,7 @@ namespace grzyClothTool.Views
             buildWindow.ShowDialog();
         }
 
-        private void Preview_Btn(object sender, RoutedEventArgs e)
+        private async void Preview_Btn(object sender, RoutedEventArgs e)
         {
             if (CWHelper.CWForm == null || CWHelper.CWForm.IsDisposed)
             {
@@ -229,7 +230,7 @@ namespace grzyClothTool.Views
 
             if (Addon.SelectedTexture != null)
             {
-                var ytd = CWHelper.CreateYtdFile(Addon.SelectedTexture.FilePath, Addon.SelectedTexture.DisplayName);
+                var ytd = await Task.Run(() => CWHelper.CreateYtdFileAsync(Addon.SelectedTexture, Addon.SelectedTexture.DisplayName));
                 CWHelper.CWForm.LoadedTexture = ytd.TextureDict;
             }
 
@@ -267,13 +268,13 @@ namespace grzyClothTool.Views
             SendDrawableUpdateToCodewalkerPreview(e);
         }
 
-        private void SendDrawableUpdateToCodewalkerPreview(EventArgs args)
+        private async void SendDrawableUpdateToCodewalkerPreview(EventArgs args)
         {
             var ydd = CreateYddFile(Addon.SelectedDrawable);
             YtdFile ytd = null;
             if (Addon.SelectedTexture != null)
             {
-                ytd = CWHelper.CreateYtdFile(Addon.SelectedTexture.FilePath, Addon.SelectedTexture.DisplayName);
+                ytd = await Task.Run(() => CWHelper.CreateYtdFileAsync(Addon.SelectedTexture, Addon.SelectedTexture.DisplayName));
                 CWHelper.CWForm.LoadedTexture = ytd.TextureDict;
             }
 
@@ -313,7 +314,7 @@ namespace grzyClothTool.Views
             SendDrawableUpdateToCodewalkerPreview(e);
         }
 
-        private void SelectedDrawable_TextureChanged(object sender, EventArgs e)
+        private async void SelectedDrawable_TextureChanged(object sender, EventArgs e)
         {
             if (e is not SelectionChangedEventArgs args || args.AddedItems.Count == 0)
             {
@@ -326,7 +327,7 @@ namespace grzyClothTool.Views
 
             if (!MainWindow.AddonManager.IsPreviewEnabled) return;
 
-            var ytd = CWHelper.CreateYtdFile(Addon.SelectedTexture.FilePath, Addon.SelectedTexture.DisplayName);
+            var ytd = await Task.Run(() => CWHelper.CreateYtdFileAsync(Addon.SelectedTexture, Addon.SelectedTexture.DisplayName));
             CWHelper.CWForm.LoadedTexture = ytd.TextureDict;
             CWHelper.CWForm.Refresh();
         }
